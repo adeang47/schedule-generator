@@ -231,7 +231,7 @@ def pair_devs(dev_matches, dev_difficulty):
 
 
 def build_schedule(devs):
-    """ build a schedule from with a list of devs pairs
+    """ build a schedule from a list of devs and their repo knowledge
 
         Args:
         devs (list) - list of developer dictionaries containing the dev name,
