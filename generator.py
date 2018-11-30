@@ -4,66 +4,23 @@ from copy import copy
 from datetime import date, timedelta
 
 import numpy as np
+import pandas as pd
 
 
-TEST_DATA = [
-    {
-        'name': 'dev1',
-        'repos': {
-            'repo1': 2,
-            'repo2': 4,
-            'repo3': 5
-        }
-    },
-    {
-        'name': 'dev2',
-        'repos': {
-            'repo1': 5,
-            'repo2': 2,
-            'repo3': 1
-        }
-    },
-    {
-        'name': 'dev3',
-        'repos': {
-            'repo1': 3,
-            'repo2': 3,
-            'repo3': 1
-        }
-    },
-    {
-        'name': 'dev4',
-        'repos': {
-            'repo1': 1,
-            'repo2': 1,
-            'repo3': 1
-        }
-    },
-    {
-        'name': 'dev5',
-        'repos': {
-            'repo1': 2,
-            'repo2': 3,
-            'repo3': 1
-        }
-    },
-    {
-        'name': 'dev6',
-        'repos': {
-            'repo1': 4,
-            'repo2': 4,
-            'repo3': 5
-        }
-    },
-    {
-        'name': 'dev7',
-        'repos': {
-            'repo1': 5,
-            'repo2': 5,
-            'repo3': 5
-        }
-    },
-]
+REPOS = {
+    'Site API - Algo',
+    'Site API - Interface',
+    'Site Portal',
+    'Spy Glass',
+    'Landing',
+    'CMS',
+    'Common Components',
+    'SEO Pages',
+    'Answer Predictor',
+    'Buoy Deployment',
+    'Med Tools',
+    'Kube Charts'
+}
 
 MAX_VAL = 5
 MIN_VAL = 1
@@ -353,8 +310,30 @@ def build_schedule_order(dev_pairs, schedule_restrictions, start_date=date.today
     return schedule
 
 
-def build_schedule(start_date):
-    pairs = build_pairs(TEST_DATA)
+def load_devs():
+    """ load developers and their repository knowledge from the repo_knowledge csv file
+
+
+    Returns:
+        (list): list dicts for each developer with their name,
+            and all repositories with their corresponding level of knowledge/familiarity
+
+    """
+    devs = []
+    df = pd.DataFrame.from_csv('repo_knowledge.csv')
+    for row in df.iterrows():
+        dev = {'name': row[1]['Username'], 'repos': {}}
+        for repo in REPOS:
+            dev['repos'][repo] = row[1][
+                'Rate your knowledge/familiarity of the following repositories. [{}]'.format(repo)]
+        devs.append(dev)
+
+    return devs
+
+
+def build_schedule(start_date=date.today()):
+    devs = load_devs()
+    pairs = build_pairs(devs)
     schedule = build_schedule_order(pairs, {}, start_date)
 
     return schedule
